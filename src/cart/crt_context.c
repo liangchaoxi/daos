@@ -276,7 +276,7 @@ crt_context_provider_create(crt_context_t *crt_ctx, int provider)
 
 	if (crt_is_service() &&
 	    crt_gdata.cg_auto_swim_disable == 0 &&
-	    ctx->cc_idx == crt_gdata.cg_swim_crt_idx) {
+	    ctx->cc_idx == crt_gdata.cg_swim_crt_idx) { // 进程启动的第二个线程才会启动swim操作, 确保只有一个线程操作swim
 		rc = crt_swim_init(crt_gdata.cg_swim_crt_idx);
 		if (rc) {
 			D_ERROR("crt_swim_init() failed rc: %d.\n", rc);
@@ -290,7 +290,7 @@ crt_context_provider_create(crt_context_t *crt_ctx, int provider)
 
 			D_DEBUG(DB_TRACE, "Slow network provider is detected, "
 					  "increase SWIM timeouts by twice.\n");
-
+            //CRT_NA_OFI_SOCKETS模式，故超时时间x2
 			swim_suspect_timeout_set(swim_suspect_timeout_get() * 2);
 			swim_ping_timeout_set(swim_ping_timeout_get() * 2);
 			swim_period_set(swim_period_get() * 2);

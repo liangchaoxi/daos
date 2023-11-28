@@ -120,18 +120,22 @@ struct crt_corpc_info {
 };
 
 struct crt_rpc_priv {
-	crt_rpc_t		crp_pub; /* public part */
+	crt_rpc_t		crp_pub; /* public part 公共部分 ,   就是crt_rpc*/
 	/* link to crt_ep_inflight::epi_req_q/::epi_req_waitq */
 	d_list_t		crp_epi_link;
-	/* tmp_link used in crt_context_req_untrack */
+	/* tmp_link used in crt_context_req_untrack 用于 crt_context_req_untrack 的临时链接 */
 	d_list_t		crp_tmp_link;
-	/* link to parent RPC crp_opc_info->co_child_rpcs/co_replied_rpcs */
+	/* link to parent RPC crp_opc_info->co_child_rpcs/co_replied_rpcs*/
+	/*链接到父 RPC crp_opc_info->co_child_rpcs/co_replied_rpcs */
 	d_list_t		crp_parent_link;
 	/* binheap node for timeout management, in crt_context::cc_bh_timeout */
+    /*用于超时管理的二叉堆节点，位于 crt_context::cc_bh_timeout 中 */
 	struct d_binheap_node	crp_timeout_bp_node;
 	/* the timeout in seconds set by user */
+    /* 由用户设置的超时时间（毫秒） */
 	uint32_t		crp_timeout_sec;
 	/* time stamp to be timeout, the key of timeout binheap */
+    /* 超时时间戳，超时二叉堆的 key */
 	uint64_t		crp_timeout_ts;
 	crt_cb_t		crp_complete_cb;
 	void			*crp_arg; /* argument for crp_complete_cb */
@@ -182,9 +186,9 @@ struct crt_rpc_priv {
 	/* corpc info, only valid when (crp_coll == 1) */
 	struct crt_corpc_info	*crp_corpc_info;
 	pthread_spinlock_t	crp_lock;
-	struct crt_common_hdr	crp_reply_hdr; /* common header for reply */
-	struct crt_common_hdr	crp_req_hdr; /* common header for request */
-	struct crt_corpc_hdr	crp_coreq_hdr; /* collective request header */
+	struct crt_common_hdr	crp_reply_hdr; /* common header for reply *//* 回复的公共头部 */
+	struct crt_common_hdr	crp_req_hdr; /* common header for request *//* 请求的公共头部 */
+	struct crt_corpc_hdr	crp_coreq_hdr; /* collective request header *//* 集体请求头部 */
 };
 
 #define CRT_PROTO_INTERNAL_VERSION 4

@@ -60,50 +60,66 @@ struct crt_prov_gdata {
 };
 
 
-/* CaRT global data */
+
+
+
+
+/* CaRT global data 
+这个结构体`crt_gdata`是CaRT（Concurrent RPC Transport）库的全局数据结构体，
+CaRT是DAOS（Distributed Asynchronous Object Storage）中的通信层。该结构体
+包含了CaRT全局运行时状态、配置和统计信息。
+*/
 struct crt_gdata {
 	/** Provider initialized at crt_init() time */
+    /*在`crt_init()`函数调用时，这里记录了初始化时的提供者(provider)信息。
+    在CaRT库中，provider指的是底层网络通信层的实现，比如OFI提供的sockets, verbs等。*/
 	int			cg_init_prov;
 
-	/** Provider specific data */
+	/** Provider specific data 存储特定于provider的全局数据的数组，`CRT_NA_COUNT`定义了支持的网络抽象数量*/
 	struct crt_prov_gdata	cg_prov_gdata[CRT_NA_COUNT];
 
-	/** global timeout value (second) for all RPCs */
+	/** global timeout value (second) for all RPCs 所有RPC请求的全局超时值（以秒为单位）*/
 	uint32_t		cg_timeout;
 
-	/** global swim index for all servers */
+	/** global swim index for all servers 全局变量，用于标识SWIM协议的索引，SWIM协议用于故障检测和成员管理*/
 	int32_t			cg_swim_crt_idx;
 
 	/** credits limitation for #inflight RPCs per target EP CTX */
+    /*每个Endpoint（Endpoint Context，EP CTX）的飞行中（inflight）RPC请求的限制。
+    控制并发RPC请求数目可以防止一个节点上的资源被远程节点的大量请求耗尽*/
 	uint32_t		cg_credit_ep_ctx;
 
-	/** the global opcode map */
+	/** the global opcode map 指向操作代码（opcode）映射的指针，这个映射用于注册和查找RPC处理程序*/
 	struct crt_opc_map	*cg_opc_map;
-	/** HG level global data */
+	/** HG level global data 指向HG（Mercury）层全局数据的指针。Mercury是CaRT底层使用的通信中间件，
+	该结构体用于维护Mercury相关的状态和配置信息*/
 	struct crt_hg_gdata	*cg_hg;
 
-	struct crt_grp_gdata	*cg_grp;
+	struct crt_grp_gdata	*cg_grp; //指向群组全局数据的指针，群组是CaRT用于管理一组节点或服务的机制
 
 	/** refcount to protect crt_init/crt_finalize */
+    /*引用计数，用来确保`crt_init`和`crt_finalize`的调用次数是匹配的，这有助于防止资源泄露或重复释放资源等问题*/
 	volatile unsigned int	cg_refcount;
 
 	/** flags to keep track of states */
-	unsigned int		cg_inited		: 1,
-				cg_grp_inited		: 1,
-				cg_swim_inited		: 1,
-				cg_auto_swim_disable	: 1,
+	unsigned int		cg_inited		: 1, //表示CaRT是否已初始化。
+				cg_grp_inited		: 1,     //表示群组是否已初始化。
+				cg_swim_inited		: 1,     //表示SWIM协议是否已初始化。
+				cg_auto_swim_disable	: 1, //表示是否自动禁用SWIM协议。
 				/** whether it is a client or server */
 				cg_server		: 1,
 				/** whether scalable endpoint is enabled */
-				cg_use_sensors		: 1;
+				cg_use_sensors		: 1; //指示是否启用了性能监测传感器。
 
 	ATOMIC uint64_t		cg_rpcid; /* rpc id */
 
 	/* protects crt_gdata */
-	pthread_rwlock_t	cg_rwlock;
+	pthread_rwlock_t	cg_rwlock; //读/写锁，对全局数据`crt_gdata`的访问需要通过该锁来保证线程安全。
 
 	/** Global statistics (when cg_use_sensors = true) */
-	/**
+/*cg_uri_self 和 cg_uri_other 可能是用于统计和监控目的的指标，记录和跟踪URI查找的次数。这样的统计信息
+可以帮助系统管理员和开发者理解系统的负载和通信模式，进而做出调优决策。*/
+    /**
 	 * Total number of successfully served URI lookup for self,
 	 * of type counter
 	 */

@@ -1030,6 +1030,7 @@ int crt_swim_init(int crt_ctx_idx)
 	 * crt_swim_rank_add.
 	 */
 	csm->csm_incarnation = hlc;
+    //初始化siwm句柄
 	csm->csm_ctx = swim_init(SWIM_ID_INVALID, &crt_swim_ops, NULL);
 	if (csm->csm_ctx == NULL) {
 		D_ERROR("swim_init() failed for self=%u, crt_ctx_idx=%d\n",
@@ -1057,13 +1058,13 @@ int crt_swim_init(int crt_ctx_idx)
 
 		crt_swim_rank_shuffle(grp_priv);
 	}
-
+    //注册swim的rpc函数集
 	rc = crt_proto_register(&crt_swim_proto_fmt);
 	if (rc) {
 		D_ERROR("crt_proto_register(): "DF_RC"\n", DP_RC(rc));
 		D_GOTO(cleanup, rc);
 	}
-
+    //注册回调函数, 会在CART线程:dss_srv_handle 执行
 	rc = crt_register_progress_cb(crt_swim_progress_cb, crt_ctx_idx, NULL);
 	if (rc) {
 		D_ERROR("crt_register_progress_cb(): "DF_RC"\n", DP_RC(rc));

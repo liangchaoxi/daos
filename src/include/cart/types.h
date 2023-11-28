@@ -170,6 +170,7 @@ enum crt_rpc_flags {
 
 struct crt_rpc;
 
+/*用于表示公共 RPC（远程过程调用）请求和回复的数据结构*/
 /** Public RPC request/reply, exports to user */
 typedef struct crt_rpc {
 	crt_context_t		cr_ctx; /**< CRT context of the RPC */

@@ -49,32 +49,34 @@ struct crt_grp_priv;
 
 struct crt_grp_priv {
 	d_list_t		 gp_link; /* link to crt_grp_list */
-	crt_group_t		 gp_pub; /* public grp handle */
+	crt_group_t		 gp_pub; /* public grp handle 公共组处理*/
 
-	/* Link to a primary group; only set for secondary groups  */
+	 /* Link to a primary group; only set for secondary groups 链接到主组的指针，当此结构体为辅助组时设置。*/
 	struct crt_grp_priv	*gp_priv_prim;
 
-	/* List of secondary groups associated with this group */
+	  /* List of secondary groups associated with this group 与该组相关联的次级组列表*/
 	d_list_t		gp_sec_list;
 
-	/*
-	 * member ranks, should be unique and sorted, each member is the rank
-	 * number within the primary group.
-	 */
+    /*
+        * member ranks, should be unique and sorted, each member is the rank
+        * number within the primary group.
+        *rank成员，应该是唯一且排序的，每个成员是主组里的rank号*/
+
 	struct crt_grp_membs	gp_membs;
 	/*
 	 * the version number of the group. Set my crt_group_version_set or
 	 * crt_group_mod APIs.
 	 */
-	uint32_t		 gp_membs_ver;
+	uint32_t		 gp_membs_ver;//组的版本号
 	/*
 	 * this structure contains the circular list of member ranks.
 	 * It's used to store SWIM related information and should strictly
 	 * correspond to members in gp_membs.
+	  该结构体包括成员ranks的循环列表，它用来存储与SWIM相关的信息并且应当严格对应 gp_membs 中的成员
 	 */
 	struct crt_swim_membs	 gp_membs_swim;
 
-	/* size (number of membs) of group */
+	/* size (number of membs) of group 组的大小（成员数量）*/
 	uint32_t		 gp_size;
 	/*
 	 * logical self rank in this group, only valid for local group.
@@ -82,36 +84,38 @@ struct crt_grp_priv {
 	 * For primary group, gp_self == gp_membs->rl_ranks[gp_self].
 	 * If gp_self is CRT_NO_RANK, it usually means the group version is not
 	 * up to date.
+	*在当前组中自身的rank，在本地组中才有效。对于主组，gp_self == gp_membs->rl_ranks[gp_self]。
+    *如果 gp_self 是 CRT_NO_RANK，通常表示组的数据未更新
 	 */
 	d_rank_t		 gp_self;
-	/* List of PSR ranks */
+	/* List of PSR ranks  */ PSR rank的列表
 	d_rank_list_t		 *gp_psr_ranks;
-	/* PSR rank in attached group */
+	/* PSR rank in attached group */  附属组中的 PSR rank
 	d_rank_t		 gp_psr_rank;
-	/* PSR phy addr address in attached group */
+	/* PSR phy addr address in attached group */ PSR在附属组中的物理地址
 	crt_phy_addr_t		 gp_psr_phy_addr;
-	/* address lookup cache, only valid for primary group */
+	/* address lookup cache, only valid for primary group */地址查找缓存，只对主要组有效。
 	struct d_hash_table	 *gp_lookup_cache;
 
-	/* uri lookup cache, only valid for primary group */
+	/* uri lookup cache, only valid for primary group */ URI 查找缓存，只对主要组有效。   
 	struct d_hash_table	 gp_uri_lookup_cache;
 
-	/* Primary to secondary rank mapping table */
+	/* Primary to secondary rank mapping table */ 主要到次级rank的映射表
 	struct d_hash_table	 gp_p2s_table;
 
-	/* Secondary to primary rank mapping table */
+	/* Secondary to primary rank mapping table */ 次级到主要rank的映射表
 	struct d_hash_table	 gp_s2p_table;
-
+    //gp_primary, gp_view, gp_auto_remove: 分别标记主要组、视图标记以及自动从辅助组删除 rank的标记。
 	/* set of variables only valid in primary service groups */
 	uint32_t		 gp_primary:1, /* flag of primary group */
 				 gp_view:1, /* flag to indicate it is a view */
 				/* Auto remove rank from secondary group */
 				 gp_auto_remove:1;
 
-	/* group reference count */
+	/* group reference count */组的引用计数。
 	uint32_t		 gp_refcount;
 
-	pthread_rwlock_t	 gp_rwlock; /* protect all fields above */
+	pthread_rwlock_t	 gp_rwlock; /* protect all fields above */保护以上字段的读写锁。
 };
 
 static inline d_rank_list_t*
