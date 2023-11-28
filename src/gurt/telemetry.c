@@ -704,20 +704,22 @@ create_shmem(const char *root_path, key_t key, size_t size_bytes,
 	return 0;
 }
 
-/**
+/** 初始化遥测信息和度量参数实例.性能监控和问题诊断，通过跟踪和收集运行时的遥测信息和度量数据
  * Initialize an instance of the telemetry and metrics API for the producer
  * process.
  *
  * \param[in]	id		Identifies the producer process amongst others
- *				on the same machine.
+ *				on the same machine. 生产者进程id,区别与其他进程
  * \param[in]	mem_size	Size in bytes of the shared memory segment that
- *				is allocated.
+ *				is allocated. 共享内存段的大小
  * \param[in]	flags		Optional flags to control initialization.
  *				Use D_TM_SERIALIZATION to enable read/write
  *				synchronization of individual nodes.
  *				Use D_TM_RETAIN_SHMEM to retain the shared
  *				memory segment created for these metrics after
- *				this process exits.
+ *				this process exits.可选的位掩码标志，用于控制初始化行为
+                D_TM_SERIALIZATION，它启用度量节点的读/写同步，以及 D_TM_RETAIN_SHMEM，
+                允许在生产者进程退出后保留共享内存段。
  *
  * \return		DER_SUCCESS		Success
  *			-DER_NO_SHMEM		Out of shared memory

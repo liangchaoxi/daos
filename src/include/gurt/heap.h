@@ -23,24 +23,34 @@ extern "C" {
 /**
  * \file
  *
- * Binary heap
+ * Binary heap 二叉堆
  *
  * The binary heap is a scalable data structure created using a binary tree. It
  * is capable of maintaining large sets of objects sorted usually by one or
  * more object properties. User is required to register a comparison callback
  * to determine the relevant ordering of any two objects belong to the set.
  *
+    二叉堆是使用二叉树创建的一个可扩展的数据结构。它能够维持大量通常按一个或
+    多个属性排序的对象集合。用户需要注册一个比较回调函数    来确定集合中任意两个
+    对象相关的排序顺序。
+
  * There is no traverse operation, rather the intention is for the object of the
  * lowest priority which will always be at the root of the tree (as this is an
  * implementation of a min-heap) to be removed by users for consumption.
  *
+   这里没有遍历操作，而是期望优先级最低的对象（因为这是一个最小堆的实现）始终位
+   于树的根部，以便用户移除供消费。
  * Users of the heap should embed a d_binheap_node_t object instance on every
  * object of the set that they wish the binary heap instance to handle, and
  * required to provide a d_binheap_ops::hop_compare() implementation which
  * is used by the heap as the binary predicate during its internal sorting.
  *
+    堆的用户应该在他们的二叉堆实例的集合内的每个对象上嵌入一个
+    d_binheap_node_t，并且需要提供一个 d_binheap_ops::hop_compare()实现，这个
+    实现在堆的内部排序过程中被用作二元判定。
  * The implementation provides an optional internal lock supporting, user can
  * select to use its own external lock mechanism as well.
+   (这个)实现提供了一个可选的内部锁，用户也可以选择使用他们自己的外部锁机制。
  */
 
 /** @addtogroup GURT
@@ -48,10 +58,11 @@ extern "C" {
  */
 
 /**
- * Binary heap node.
+ * Binary heap node.二叉堆节点
  *
  * Objects of this type are embedded into objects of the ordered set that is to
  * be maintained by a struct d_binheap instance.
+   该类型的对象被嵌入到由 struct d_binheap 实例维护的有序集合的对象中
  */
 struct d_binheap_node {
 	/** Index into the binary tree */

@@ -1435,9 +1435,12 @@ crt_progress(crt_context_t crt_ctx, int64_t timeout)
 
 	ctx = crt_ctx;
 
-	/**
+	/*
 	 * call progress once w/o any timeout before processing timed out
 	 * requests in case any replies are pending in the queue
+	 “w/o” 是 “without” 的缩写形式
+	 在处理超时请求之前，调用一次进度函数，以防止队列中有任何未完成的回复。
+	 既先清理掉到达的请求,然后再进入后面的带timeout的crt_hg_progress(ctx, timeout) (阻塞).
 	 */
 	rc = crt_hg_progress(&ctx->cc_hg_ctx, 0);
 	if (unlikely(rc && rc != -DER_TIMEDOUT))
